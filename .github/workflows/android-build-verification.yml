@@ -30,7 +30,14 @@ jobs:
 
       - name: Set Up Android SDK
         run: |
-          sdkmanager "platform-tools" \
+          SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
+          SDKMANAGER="$SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -x "$SDKMANAGER" ]; then
+            echo "::error::Android SDK manager not found at $SDKMANAGER"
+            exit 1
+          fi
+          yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" "platform-tools" \
             "platforms;android-35" \
             "build-tools;35.0.0"
 
